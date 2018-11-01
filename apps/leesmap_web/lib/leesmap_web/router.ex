@@ -25,7 +25,7 @@ defmodule LeesmapWeb.Router do
 
   scope "/microsub", LeesmapWeb do
     pipe_through :microsub
-    get "", MicrosubController, :endpoint
-    post "", MicrosubController, :endpoint
+    get "/", MicrosubController, :endpoint
+    post "/", MicrosubController, :endpoint
   end
 end
