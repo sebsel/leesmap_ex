@@ -13,14 +13,19 @@ defmodule LeesmapWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :microsub do
+    plug :accepts, ["json"]
+  end
+
   scope "/", LeesmapWeb do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", LeesmapWeb do
-  #   pipe_through :api
-  # end
+  scope "/microsub", LeesmapWeb do
+    pipe_through :microsub
+    get "", MicrosubController, :endpoint
+    post "", MicrosubController, :endpoint
+  end
 end
