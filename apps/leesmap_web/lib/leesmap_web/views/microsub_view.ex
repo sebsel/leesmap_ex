@@ -12,8 +12,7 @@ defmodule LeesmapWeb.MicrosubView do
   end
 
   def render("item.json", %{microsub: item}) do
-    %{_id: item.id,
-      _is_read: false}
+    item
   end
 
   def render("success.json", _) do

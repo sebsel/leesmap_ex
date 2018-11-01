@@ -14,6 +14,7 @@ defmodule Leesmap.Application do
 
     Supervisor.start_link([
       supervisor(Leesmap.Repo, []),
+      supervisor(Neo4j.Sips, [Application.fetch_env!(:leesmap, Neo4j)]),
     ], strategy: :one_for_one, name: Leesmap.Supervisor)
   end
 end
