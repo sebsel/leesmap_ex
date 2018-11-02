@@ -1,6 +1,7 @@
 defmodule LeesmapWeb.MicrosubController do
   use LeesmapWeb, :controller
   alias Leesmap.Timeline
+  alias Leesmap.Subscriber
 
   @doc ~S"""
   Timeline actions.
@@ -56,21 +57,23 @@ defmodule LeesmapWeb.MicrosubController do
         %{method: "POST"} = conn,
         %{
           "action" => "channels",
-          "name" => _name,
-          "channel" => _channel
+          "name" => name,
+          "channel" => channel
         }
       ) do
-    not_implemented(conn)
+    {:ok, :success} = Subscriber.update_channel(conn.user, channel, name)
+    render(conn, "success.json")
   end
 
   def endpoint(
         %{method: "POST"} = conn,
         %{
           "action" => "channels",
-          "name" => _name
+          "name" => name
         }
       ) do
-    not_implemented(conn)
+    {:ok, :success} = Subscriber.create_channel(conn.user, name)
+    render(conn, "success.json")
   end
 
   def endpoint(
@@ -78,10 +81,11 @@ defmodule LeesmapWeb.MicrosubController do
         %{
           "action" => "channels",
           "method" => "delete",
-          "channel" => _channel
+          "channel" => channel
         }
       ) do
-    not_implemented(conn)
+    {:ok, :success} = Subscriber.delete_channel(conn.user, channel)
+    render(conn, "success.json")
   end
 
   @doc ~S"""

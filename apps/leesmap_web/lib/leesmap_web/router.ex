@@ -15,6 +15,7 @@ defmodule LeesmapWeb.Router do
 
   pipeline :microsub do
     plug :accepts, ["json"]
+    plug :indieauth
   end
 
   scope "/", LeesmapWeb do
@@ -28,4 +29,7 @@ defmodule LeesmapWeb.Router do
     get "/", MicrosubController, :endpoint
     post "/", MicrosubController, :endpoint
   end
+
+  # TODO don't fake this
+  def indieauth(conn, _opts), do: Map.put(conn, :user, "seblog.nl/")
 end

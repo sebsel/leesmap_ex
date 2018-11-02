@@ -23,7 +23,12 @@ defmodule Leesmap.Mixfile do
   def application do
     [
       mod: {Leesmap.Application, []},
-      extra_applications: [:logger, :runtime_tools, :httpoison, :neo4j_sips]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :httpoison,
+        :neo4j_sips
+      ]
     ]
   end
 
@@ -40,7 +45,8 @@ defmodule Leesmap.Mixfile do
       {:ecto, "~> 2.1"},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 0.11"},
-      {:neo4j_sips, "~> 0.2"}
+      {:neo4j_sips, "~> 0.2"},
+      {:elixir_uuid, "~> 1.2"}
     ]
   end
 
