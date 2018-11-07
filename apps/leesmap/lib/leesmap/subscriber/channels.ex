@@ -7,19 +7,19 @@ defmodule Leesmap.Subscriber.Channels do
   which have their own special queries.
   """
   def list_channels(user) do
-    cypher =
-      ~s"""
-      MATCH (user:User)-[:OWNS]->(channels:Channel)
-      WHERE user.url = "#{user}"
-      RETURN channels
-      """
+    cypher = ~s"""
+    MATCH (user:User)-[:OWNS]->(channels:Channel)
+    WHERE user.url = {user}
+    RETURN channels
+    """
 
-    case Neo4j.query(Neo4j.conn, cypher) do
+    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user}) do
       {:ok, results} ->
         channels =
           Enum.map(results, fn %{"channels" => channels} -> channels end)
           |> add_buildin_channels()
           |> fake_unread_counts()
+
         {:ok, channels}
     end
   end
@@ -41,14 +41,14 @@ defmodule Leesmap.Subscriber.Channels do
   """
   def create_channel(user, name) do
     uid = UUID.uuid4()
-    cypher =
-      ~s"""
-      MATCH (user:User)
-      WHERE user.url = "#{user}"
-      CREATE (user)-[:OWNS]->(:Channel {uid: "#{uid}", name: "#{name}"})
-      """
 
-    case Neo4j.query(Neo4j.conn, cypher) do
+    cypher = ~s"""
+    MATCH (user:User)
+    WHERE user.url = {user}
+    CREATE (user)-[:OWNS]->(:Channel {uid: {uid}, name: {name}})
+    """
+
+    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => uid, "name" => name}) do
       {:ok, _} -> {:ok, :success}
     end
   end
@@ -58,15 +58,14 @@ defmodule Leesmap.Subscriber.Channels do
   users from changing names for unowned channels.
   """
   def update_channel(user, channel, name) do
-    cypher =
-      ~s"""
-      MATCH (user:User)-[:OWNS]->(channel:Channel)
-      WHERE user.url = {user}
-        AND channel.uid = {uid}
-      SET channel.name = {name}
-      """
+    cypher = ~s"""
+    MATCH (user:User)-[:OWNS]->(channel:Channel)
+    WHERE user.url = {user}
+      AND channel.uid = {uid}
+    SET channel.name = {name}
+    """
 
-    case Neo4j.query(Neo4j.conn, cypher, %{"user" => user, "uid" => channel, "name" => name}) do
+    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => channel, "name" => name}) do
       {:ok, _} -> {:ok, :success}
     end
   end
@@ -75,16 +74,15 @@ defmodule Leesmap.Subscriber.Channels do
   Delete a channel for a user.
   """
   def delete_channel(user, channel) do
-    cypher =
-      ~s"""
-      MATCH (user:User)-[:OWNS]->(channel:Channel)
-      WHERE user.url = {user}
-        AND channel.uid = {uid}
-      DETACH DELETE channel
-      """
+    cypher = ~s"""
+    MATCH (user:User)-[:OWNS]->(channel:Channel)
+    WHERE user.url = {user}
+      AND channel.uid = {uid}
+    DETACH DELETE channel
+    """
 
     # TODO also remove the feeds it follows!
-    case Neo4j.query(Neo4j.conn, cypher, %{"user" => user, "uid" => channel}) do
+    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => channel}) do
       {:ok, _} -> {:ok, :success}
     end
   end
