@@ -50,7 +50,8 @@ defmodule LeesmapWeb.MicrosubController do
           "action" => "channels"
         }
       ) do
-    not_implemented(conn)
+    {:ok, channels} = Subscriber.list_channels(conn.user)
+    json(conn, %{"channels" => channels})
   end
 
   def endpoint(

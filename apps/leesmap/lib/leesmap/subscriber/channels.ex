@@ -1,6 +1,11 @@
 defmodule Leesmap.Subscriber.Channels do
   alias Neo4j.Sips, as: Neo4j
 
+  @doc """
+  Return a list of all channels that belong to a user.
+  This list gets enhanced with a few build-in channels,
+  which have their own special queries.
+  """
   def list_channels(user) do
     cypher =
       ~s"""
@@ -11,11 +16,29 @@ defmodule Leesmap.Subscriber.Channels do
 
     case Neo4j.query(Neo4j.conn, cypher) do
       {:ok, results} ->
-        channels = Enum.map(results, fn %{"channels" => channels} -> channels end)
+        channels =
+          Enum.map(results, fn %{"channels" => channels} -> channels end)
+          |> add_buildin_channels()
+          |> fake_unread_counts()
         {:ok, channels}
     end
   end
 
+  defp add_buildin_channels(feeds) do
+    notifications = %{"uid" => "notifications", "name" => "Notifications"}
+    liked = %{"uid" => "liked", "name" => "Popular"}
+
+    Enum.concat([notifications], feeds)
+    |> Enum.concat([liked])
+  end
+
+  defp fake_unread_counts(feeds) do
+    Enum.map(feeds, fn feed -> Map.put(feed, "unread", false) end)
+  end
+
+  @doc """
+  Create a channel for the given user.
+  """
   def create_channel(user, name) do
     uid = UUID.uuid4()
     cypher =
@@ -30,6 +53,10 @@ defmodule Leesmap.Subscriber.Channels do
     end
   end
 
+  @doc """
+  Update a channel's name. Takes a user, to protect
+  users from changing names for unowned channels.
+  """
   def update_channel(user, channel, name) do
     cypher =
       ~s"""
@@ -44,6 +71,9 @@ defmodule Leesmap.Subscriber.Channels do
     end
   end
 
+  @doc """
+  Delete a channel for a user.
+  """
   def delete_channel(user, channel) do
     cypher =
       ~s"""
