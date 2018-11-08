@@ -13,7 +13,7 @@ defmodule Leesmap.Subscriber.Channels do
     RETURN channels
     """
 
-    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user}) do
+    case query(cypher, %{"user" => user}) do
       {:ok, results} ->
         channels =
           Enum.map(results, fn %{"channels" => channels} -> channels end)
@@ -48,7 +48,7 @@ defmodule Leesmap.Subscriber.Channels do
     CREATE (user)-[:OWNS]->(:Channel {uid: {uid}, name: {name}})
     """
 
-    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => uid, "name" => name}) do
+    case query(cypher, %{"user" => user, "uid" => uid, "name" => name}) do
       {:ok, _} -> {:ok, :success}
     end
   end
@@ -65,7 +65,7 @@ defmodule Leesmap.Subscriber.Channels do
     SET channel.name = {name}
     """
 
-    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => channel, "name" => name}) do
+    case query(cypher, %{"user" => user, "uid" => channel, "name" => name}) do
       {:ok, _} -> {:ok, :success}
     end
   end
@@ -82,8 +82,12 @@ defmodule Leesmap.Subscriber.Channels do
     """
 
     # TODO also remove the feeds it follows!
-    case Neo4j.query(Neo4j.conn(), cypher, %{"user" => user, "uid" => channel}) do
+    case query(cypher, %{"user" => user, "uid" => channel}) do
       {:ok, _} -> {:ok, :success}
     end
+  end
+
+  defp query(cypher, bindings) do
+    Neo4j.query(Neo4j.conn, cypher, bindings)
   end
 end
