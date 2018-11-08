@@ -35,7 +35,7 @@ defmodule Leesmap.Timeline do
         content
         |> Poison.decode!()
         |> Map.put(:_id, id)
-        |> Map.put(:_is_read, false)
+        |> Map.put(:_is_read, true)
       end)
 
     {:ok, items}
