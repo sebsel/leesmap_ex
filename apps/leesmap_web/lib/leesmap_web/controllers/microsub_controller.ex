@@ -107,23 +107,25 @@ defmodule LeesmapWeb.MicrosubController do
         %{method: "POST"} = conn,
         %{
           "action" => "search",
-          "query" => _query
+          "query" => query
         }
       ) do
-    not_implemented(conn)
+    {:ok, results} = Subscriber.search(query)
+    json(conn, %{"results" => results})
   end
 
   @doc ~S"""
   Preview.
   """
   def endpoint(
-        %{method: "POST"} = conn,
+        %{method: "GET"} = conn,
         %{
           "action" => "preview",
-          "url" => _url
+          "url" => url
         }
       ) do
-    not_implemented(conn)
+    {:ok, items} = Subscriber.preview(url)
+    json(conn, %{"items" => items})
   end
 
   @doc ~S"""
@@ -133,21 +135,23 @@ defmodule LeesmapWeb.MicrosubController do
         %{method: "GET"} = conn,
         %{
           "action" => "follow",
-          "channel" => _channel
+          "channel" => channel
         }
       ) do
-    not_implemented(conn)
+    {:ok, items} = Subscriber.list_subscriptions(conn.user, channel)
+    json(conn, %{"items" => items})
   end
 
   def endpoint(
         %{method: "POST"} = conn,
         %{
           "action" => "follow",
-          "channel" => _channel,
-          "url" => _url
+          "channel" => channel,
+          "url" => url
         }
       ) do
-    not_implemented(conn)
+    Subscriber.create_subscription(conn.user, channel, url)
+    render(conn, "success.json")
   end
 
   def endpoint(
