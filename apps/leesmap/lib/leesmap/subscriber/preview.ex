@@ -26,10 +26,8 @@ defmodule Leesmap.Subscriber.Preview do
   end
 
   def preview(url) do
-    IO.inspect "HEALLO"
     # items = []
     # {:ok, items}
     Leesmap.Timeline.get_items_for_channel("liked")
-    |> IO.inspect
   end
 end
