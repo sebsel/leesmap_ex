@@ -1,6 +1,6 @@
 defmodule Leesmap.Subscriber.Preview do
 
-  def search(query) do
+  def search(_query) do
     results = [
       %{
         "type" => "feed",
@@ -26,8 +26,6 @@ defmodule Leesmap.Subscriber.Preview do
   end
 
   def preview(url) do
-    # items = []
-    # {:ok, items}
-    Leesmap.Timeline.get_items_for_channel("liked")
+    {:ok, items} = Xray.parse(url)
   end
 end

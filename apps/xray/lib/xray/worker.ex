@@ -6,7 +6,7 @@ defmodule Xray.Worker do
     params = URI.encode_query(%{url: URI.encode(url), expect: :feed})
     xray_url = "https://xray.p3k.io/parse?" <> params
 
-    %{body: body} = HTTPoison.get!(xray_url)
+    %{body: body} = HTTPoison.get!(xray_url, [], recv_timeout: 20_000)
     %{"data" => data, "code" => 200} = Poison.decode!(body)
 
     {:ok, data}

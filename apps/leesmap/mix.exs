@@ -46,7 +46,8 @@ defmodule Leesmap.Mixfile do
       {:poison, "~> 3.1"},
       {:httpoison, "~> 0.11"},
       {:neo4j_sips, "~> 0.2"},
-      {:elixir_uuid, "~> 1.2"}
+      {:elixir_uuid, "~> 1.2"},
+      {:xray, in_umbrella: true}
     ]
   end
 

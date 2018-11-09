@@ -124,7 +124,7 @@ defmodule LeesmapWeb.MicrosubController do
           "url" => url
         }
       ) do
-    {:ok, items} = Subscriber.preview(url)
+    {:ok, %{"items" => items}} = Subscriber.preview(url)
     json(conn, %{"items" => items})
   end
 
